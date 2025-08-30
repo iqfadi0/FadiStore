@@ -160,20 +160,11 @@ app.post('/adminF/products/:id/delete', requireAuth, (req, res) => {
   res.redirect('/adminF/dashboard');
 });
 
-// Change password
+// Change password (directly, no current password needed)
 app.post('/adminF/password', requireAuth, async (req, res) => {
-  const { currentPassword, newPassword } = req.body;
+  const { newPassword } = req.body;
   const cfg = loadJSON(CONFIG_PATH, null);
   const products = loadJSON(PRODUCTS_PATH, []);
-
-  if (!cfg || !cfg.passwordHash) {
-    return res.render('admin_dashboard', { products, message: null, error: 'Config missing' });
-  }
-
-  const ok = await bcrypt.compare(currentPassword || '', cfg.passwordHash);
-  if (!ok) {
-    return res.render('admin_dashboard', { products, message: null, error: 'Current password is incorrect' });
-  }
 
   if (!newPassword || newPassword.length < 6) {
     return res.render('admin_dashboard', { products, message: null, error: 'New password must be at least 6 characters' });
