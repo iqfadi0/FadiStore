@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Fadi Store</title>
+  <link rel="stylesheet" href="/style.css">
+  <meta name="description" content="Fadi Store - A sleek one-page dark showcase.">
+</head>
+<body>
+  <div class="container">
+    <header class="header">
+      <div class="brand">Fadi Store</div>
+      <div class="badge">One Page • Dark Mode</div>
+    </header>
+
+    <div class="grid">
+      <% if (products.length === 0) { %>
+        <div class="card">
+          <div class="desc">
+            <span class="code-title">No items yet.</span> Use the admin panel to add your first item.
+          </div>
+        </div>
+      <% } %>
+
+      <% products.forEach(p => { %>
+        <article class="card">
+          <% if (p.imagePath) { %>
+            <img src="<%= p.imagePath %>" alt="Item Image">
+          <% } %>
+          <div class="desc"><%= p.description %></div>
+        </article>
+      <% }) %>
+    </div>
+
+    <footer>
+      © <%= new Date().getFullYear() %> • Fadi Store • <a href="/">Home</a>
+    </footer>
+  </div>
+</body>
+</html>
