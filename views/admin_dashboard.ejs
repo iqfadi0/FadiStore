@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Fadi Store • Admin</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <div class="container">
+    <header class="header">
+      <div class="brand">Fadi Store • Admin</div>
+      <form action="/adminF/logout" method="POST">
+        <button class="btn" type="submit">Logout</button>
+      </form>
+    </header>
+
+    <% if (message) { %><div class="success"><%= message %></div><% } %>
+    <% if (error) { %><div class="error"><%= error %></div><% } %>
+
+    <section class="section">
+      <h3>Add New Item</h3>
+      <form action="/adminF/products" method="POST" enctype="multipart/form-data" class="form-row">
+        <div>
+          <div class="label">Image (optional)</div>
+          <input class="input" type="file" name="image" accept="image/*">
+        </div>
+        <div>
+          <div class="label">Description (English — supports long bullet lists like 1. 2. 3. ... 100)</div>
+          <textarea name="description" rows="8" class="input" placeholder="1. Feature one&#10;2. Feature two&#10;3. ..."></textarea>
+        </div>
+        <button class="btn" type="submit">Add Item</button>
+      </form>
+    </section>
+
+    <section class="section">
+      <h3>Items</h3>
+      <% if (products.length === 0) { %>
+        <div class="badge">No items yet.</div>
+      <% } %>
+      <% products.forEach(p => { %>
+        <div class="card">
+          <div class="label">ID: <%= p.id %></div>
+          <% if (p.imagePath) { %>
+            <img src="<%= p.imagePath %>" alt="Item image" style="margin-top:8px">
+          <% } %>
+          <form action="/adminF/products/<%= p.id %>" method="POST" enctype="multipart/form-data" class="form-row" style="margin-top:12px">
+            <div>
+              <div class="label">Replace Image (optional)</div>
+              <input class="input" type="file" name="image" accept="image/*">
+            </div>
+            <div>
+              <div class="label">Description</div>
+              <textarea name="description" rows="6" class="input"><%= p.description %></textarea>
+            </div>
+            <div style="display:flex; gap:10px; flex-wrap:wrap">
+              <button class="btn" type="submit">Save Changes</button>
+            </div>
+          </form>
+          <form action="/adminF/products/<%= p.id %>/delete" method="POST" onsubmit="return confirm('Delete this item?')" style="margin-top:10px">
+            <button class="btn btn-danger" type="submit">Delete</button>
+          </form>
+        </div>
+      <% }) %>
+    </section>
+
+    <section class="section">
+      <h3>Change Password</h3>
+      <form action="/adminF/password" method="POST" class="form-row">
+        <input class="input" type="password" name="currentPassword" placeholder="Current password" required>
+        <input class="input" type
