@@ -24,7 +24,6 @@ function ensureConfig() {
   if (!fs.existsSync(CONFIG_PATH)) {
     const defaultHash = bcrypt.hashSync('1122Fadi!!@@@', 10);
     fs.writeFileSync(CONFIG_PATH, JSON.stringify({ passwordHash: defaultHash }, null, 2));
-    console.log('Config created with default password: 1122Fadi!!@@@');
   }
 }
 ensureConfig();
