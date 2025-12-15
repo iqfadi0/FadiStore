@@ -2,131 +2,129 @@
 <html lang="ar">
 <head>
 <meta charset="UTF-8">
-<title>رصيد وخدمة</title>
+<title>Quota Packages</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
-body{margin:0;font-family:Arial;background:#0b0b0b;color:#fff}
-.hidden{display:none}
+body{margin:0;font-family:Arial;background:#0f0f0f;color:#fff}
 .container{max-width:1100px;margin:auto;padding:20px}
-.card{background:#141414;border-radius:12px;padding:20px;margin-bottom:20px}
-input,button{width:100%;padding:12px;margin-top:10px;border-radius:8px;border:none}
-input{background:#222;color:#fff}
-button{background:#3b82f6;color:#fff;font-weight:bold;cursor:pointer}
-.pkg{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:15px}
-.pkg-card{background:#1a1a1a;border-radius:12px;padding:15px}
-.pkg-card h3{margin:0}
-.admin{background:#7c2d12}
+.hidden{display:none}
+input,button{padding:10px;margin:5px;width:100%;border-radius:6px;border:none}
+button{background:#3b82f6;color:#fff;cursor:pointer}
+.card{background:#1c1c1c;padding:15px;border-radius:10px;margin:10px 0}
+.admin{background:#111;border:1px solid #333}
+.package{border:1px solid #333}
 </style>
 </head>
 <body>
 
 <div class="container">
 
+<h1>Quota Packages</h1>
+
 <!-- LOGIN -->
 <div id="login" class="card">
 <h2>تسجيل الدخول</h2>
-<input id="phone" placeholder="رقم الهاتف">
-<input id="pass" placeholder="كلمة المرور">
+<input id="loginPhone" placeholder="رقم الهاتف">
+<input id="loginPass" type="password" placeholder="كلمة المرور">
 <button onclick="login()">دخول</button>
-<p style="color:#aaa">* الحسابات ينشئها الأدمن فقط</p>
-</div>
-
-<!-- USER -->
-<div id="user" class="hidden">
-<div class="card">
-<h2>أهلاً <span id="uPhone"></span></h2>
-<p>الرصيد الحالي: <b id="balance"></b> LBP</p>
-</div>
-
-<div class="pkg">
-<div class="pkg-card">
-<h3>5.5 GB</h3>
-<p>550,000 LBP</p>
-<input placeholder="رقم الهاتف" id="p1">
-<button onclick="buy(550000,'p1')">اشتراك</button>
-</div>
-
-<div class="pkg-card">
-<h3>11 GB</h3>
-<p>720,000 LBP</p>
-<input placeholder="رقم الهاتف" id="p2">
-<button onclick="buy(720000,'p2')">اشتراك</button>
-</div>
-
-<div class="pkg-card">
-<h3>22 GB</h3>
-<p>1,070,000 LBP</p>
-<input placeholder="رقم الهاتف" id="p3">
-<button onclick="buy(1070000,'p3')">اشتراك</button>
-</div>
-</div>
-
-<button style="margin-top:20px;background:#555" onclick="logout()">تسجيل خروج</button>
+<p id="loginMsg"></p>
 </div>
 
 <!-- ADMIN -->
 <div id="admin" class="hidden admin card">
 <h2>لوحة الأدمن</h2>
 
-<input id="newPhone" placeholder="رقم الزبون">
+<h3>إضافة زبون</h3>
+<input id="newPhone" placeholder="رقم الهاتف">
 <input id="newPass" placeholder="كلمة المرور">
-<button onclick="createUser()">إنشاء حساب</button>
+<button onclick="addUser()">إضافة زبون</button>
 
-<hr>
+<h3>إضافة رصيد</h3>
+<input id="chargePhone" placeholder="رقم الهاتف">
+<input id="chargeAmount" placeholder="المبلغ">
+<button onclick="charge()">شحن</button>
 
-<input id="addPhone" placeholder="رقم الزبون">
-<input id="amount" placeholder="المبلغ">
-<button onclick="addBalance()">إضافة رصيد</button>
+<h3>إضافة باكج</h3>
+<input id="pkgName" placeholder="اسم الباكج">
+<input id="pkgPrice" placeholder="السعر">
+<button onclick="addPackage()">إضافة</button>
+</div>
 
-<button style="background:#000" onclick="logout()">خروج</button>
+<!-- USER -->
+<div id="user" class="hidden card">
+<h2>لوحة الزبون</h2>
+<p>الرصيد: <span id="balance"></span> LBP</p>
+<div id="packages"></div>
 </div>
 
 </div>
 
 <script>
-let users = JSON.parse(localStorage.getItem("users")||"{}");
-let current = null;
+const ADMIN_USER="admin";
+const ADMIN_PASS="admin123";
 
-// أدمن ثابت
-users["admin"]={pass:"admin",balance:0,admin:true};
-localStorage.setItem("users",JSON.stringify(users));
+let users = JSON.parse(localStorage.getItem("users")||"{}");
+let packages = JSON.parse(localStorage.getItem("packages")||"[]");
+let currentUser=null;
+
+function save(){
+ localStorage.setItem("users",JSON.stringify(users));
+ localStorage.setItem("packages",JSON.stringify(packages));
+}
 
 function login(){
-let p=phone.value, pw=pass.value;
-if(!users[p]||users[p].pass!==pw)return alert("خطأ");
-current=p;
-login.classList.add("hidden");
-(users[p].admin?admin:user).classList.remove("hidden");
-if(!users[p].admin){
-uPhone.innerText=p;
-balance.innerText=users[p].balance;
-}
-}
+ let p=loginPhone.value;
+ let pass=loginPass.value;
 
-function logout(){location.reload()}
+ if(p===ADMIN_USER && pass===ADMIN_PASS){
+  login.classList.add("hidden");
+  admin.classList.remove("hidden");
+  return;
+ }
 
-function createUser(){
-let p=newPhone.value, pw=newPass.value;
-users[p]={pass:pw,balance:0};
-localStorage.setItem("users",JSON.stringify(users));
-alert("تم إنشاء الحساب");
-}
-
-function addBalance(){
-let p=addPhone.value, a=+amount.value;
-if(!users[p])return alert("غير موجود");
-users[p].balance+=a;
-localStorage.setItem("users",JSON.stringify(users));
-alert("تمت الإضافة");
+ if(users[p] && users[p].pass===pass){
+  currentUser=p;
+  login.classList.add("hidden");
+  user.classList.remove("hidden");
+  renderUser();
+ }else{
+  loginMsg.innerText="بيانات خاطئة";
+ }
 }
 
-function buy(price,inputId){
-let phoneNum=document.getElementById(inputId).value;
-if(users[current].balance<price)return alert("رصيد غير كافي");
-users[current].balance-=price;
-localStorage.setItem("users",JSON.stringify(users));
-balance.innerText=users[current].balance;
-alert("تم الطلب على الرقم: "+phoneNum+"\nفعّل الخدمة يدويًا");
+function addUser(){
+ users[newPhone.value]={pass:newPass.value,balance:0};
+ save(); alert("تمت الإضافة");
+}
+
+function charge(){
+ users[chargePhone.value].balance += Number(chargeAmount.value);
+ save(); alert("تم الشحن");
+}
+
+function addPackage(){
+ packages.push({name:pkgName.value,price:Number(pkgPrice.value)});
+ save(); alert("تمت إضافة الباكج");
+}
+
+function renderUser(){
+ balance.innerText=users[currentUser].balance;
+ packagesDiv=packages.map((p,i)=>`
+ <div class="card package">
+ <b>${p.name}</b> - ${p.price} LBP
+ <input placeholder="رقم الهاتف">
+ <button onclick="buy(${i})">اشتراك</button>
+ </div>`).join("");
+ document.getElementById("packages").innerHTML=packagesDiv;
+}
+
+function buy(i){
+ let p=packages[i];
+ if(users[currentUser].balance>=p.price){
+  users[currentUser].balance-=p.price;
+  save(); renderUser();
+  alert("تم الاشتراك");
+ }else alert("رصيد غير كافي");
 }
 </script>
 
