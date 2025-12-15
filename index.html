@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Habit Forge</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: #0f172a;
+      color: #f8fafc;
+    }
+
+    header {
+      background: linear-gradient(135deg, #4f46e5, #312e81);
+      padding: 40px 20px;
+      text-align: center;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 36px;
+    }
+
+    header p {
+      margin-top: 10px;
+      color: #c7d2fe;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 30px auto;
+      padding: 0 20px;
+    }
+
+    .card {
+      background: #020617;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+
+    .card h2 {
+      margin-top: 0;
+      font-size: 22px;
+    }
+
+    input, select, button {
+      width: 100%;
+      padding: 12px;
+      margin-top: 10px;
+      border-radius: 8px;
+      border: none;
+      font-size: 15px;
+    }
+
+    input, select {
+      background: #020617;
+      color: #f8fafc;
+      border: 1px solid #334155;
+    }
+
+    button {
+      background: #22c55e;
+      color: #022c22;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .habit {
+      border: 1px solid #334155;
+      border-radius: 10px;
+      padding: 15px;
+      margin-bottom: 15px;
+    }
+
+    .habit h3 {
+      margin: 0;
+    }
+
+    .habit small {
+      color: #94a3b8;
+    }
+
+    .progress {
+      height: 12px;
+      background: #1e293b;
+      border-radius: 10px;
+      overflow: hidden;
+      margin: 10px 0;
+    }
+
+    .progress div {
+      height: 100%;
+      width: 0%;
+      background: #22c55e;
+      transition: width 0.3s;
+    }
+
+    .actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .actions button {
+      flex: 1;
+      background: #4f46e5;
+      color: white;
+    }
+
+    .message {
+      text-align: center;
+      font-size: 18px;
+      margin-top: 20px;
+      color: #22c55e;
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <h1>Habit Forge</h1>
+  <p>Build habits. Track progress. Stay consistent.</p>
+</header>
+
+<div class="container">
+
+  <div class="card">
+    <h2>Add New Habit</h2>
+    <input id="habitName" placeholder="Habit name (e.g. Drink water)" />
+    <select id="habitType">
+      <option value="daily">Daily</option>
+      <option value="weekly">Weekly</option>
+    </select>
+    <button onclick="addHabit()">Add Habit</button>
+  </div>
+
+  <div class="card">
+    <h2>Your Habits</h2>
+    <div id="habits"></div>
+  </div>
+
+  <div class="message" id="message"></div>
+
+</div>
+
+<script>
+  let habits = JSON.parse(localStorage.getItem("habits") || "[]");
+
+  const messages = [
+    "Great job! 💪",
+    "Keep going 🔥",
+    "Consistency is power 🚀",
+    "Small steps every day 🌱",
+    "Don't break the streak 👏"
+  ];
+
+  function addHabit() {
+    const name = habitName.value.trim();
+    const type = habitType.value;
+    if (!name) return;
+
+    habits.push({
+      name,
+      type,
+      streak: 0,
+      progress: 0
+    });
+
+    habitName.value = "";
+    save();
+    render();
+  }
+
+  function completeHabit(i) {
+    habits[i].streak++;
+    habits[i].progress = Math.min(habits[i].progress + (habits[i].type === "daily" ? 10 : 20), 100);
+    message.innerText = messages[Math.floor(Math.random() * messages.length)];
+    save();
+    render();
+  }
+
+  function save() {
+    localStorage.setItem("habits", JSON.stringify(habits));
+  }
+
+  function render() {
+    habitsDiv = document.getElementById("habits");
+    habitsDiv.innerHTML = "";
+
+    habits.forEach((h, i) => {
+      habitsDiv.innerHTML += `
+        <div class="habit">
+          <h3>${h.name}</h3>
+          <small>${h.type} habit • Streak: ${h.streak}</small>
+          <div class="progress">
+            <div style="width:${h.progress}%"></div>
+          </div>
+          <div class="actions">
+            <button onclick="completeHabit(${i})">Complete</button>
+          </div>
+        </div>
+      `;
+    });
+  }
+
+  render();
+</script>
+
+</body>
+</html>
