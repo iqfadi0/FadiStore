@@ -1,214 +1,175 @@
-<!doctype html>
-<html lang="en">
+<!DOCTYPE html>
+<html lang="ar">
 <head>
-  <meta charset="utf-8" />
-  <title>Habit Forge</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta charset="UTF-8">
+<title>Quota Packages</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+*{box-sizing:border-box;font-family:Arial}
+body{margin:0;background:#0b0b0f;color:#fff}
 
-  <style>
-    body {
-      margin: 0;
-      font-family: Arial, Helvetica, sans-serif;
-      background: #0f172a;
-      color: #f8fafc;
-    }
+/* LOGIN */
+.login{
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+.login-box{
+  background:#15151c;
+  padding:30px;
+  border-radius:12px;
+  width:320px;
+}
+.login-box h2{text-align:center}
+.login-box input{
+  width:100%;
+  padding:12px;
+  margin-top:10px;
+  background:#0f0f14;
+  border:1px solid #333;
+  color:#fff;
+  border-radius:6px;
+}
+.login-box button{
+  width:100%;
+  margin-top:15px;
+  padding:12px;
+  background:#3b82f6;
+  border:none;
+  color:#fff;
+  font-weight:bold;
+  border-radius:6px;
+  cursor:pointer;
+}
 
-    header {
-      background: linear-gradient(135deg, #4f46e5, #312e81);
-      padding: 40px 20px;
-      text-align: center;
-    }
-
-    header h1 {
-      margin: 0;
-      font-size: 36px;
-    }
-
-    header p {
-      margin-top: 10px;
-      color: #c7d2fe;
-    }
-
-    .container {
-      max-width: 900px;
-      margin: 30px auto;
-      padding: 0 20px;
-    }
-
-    .card {
-      background: #020617;
-      border-radius: 12px;
-      padding: 20px;
-      margin-bottom: 20px;
-    }
-
-    .card h2 {
-      margin-top: 0;
-      font-size: 22px;
-    }
-
-    input, select, button {
-      width: 100%;
-      padding: 12px;
-      margin-top: 10px;
-      border-radius: 8px;
-      border: none;
-      font-size: 15px;
-    }
-
-    input, select {
-      background: #020617;
-      color: #f8fafc;
-      border: 1px solid #334155;
-    }
-
-    button {
-      background: #22c55e;
-      color: #022c22;
-      cursor: pointer;
-      font-weight: bold;
-    }
-
-    .habit {
-      border: 1px solid #334155;
-      border-radius: 10px;
-      padding: 15px;
-      margin-bottom: 15px;
-    }
-
-    .habit h3 {
-      margin: 0;
-    }
-
-    .habit small {
-      color: #94a3b8;
-    }
-
-    .progress {
-      height: 12px;
-      background: #1e293b;
-      border-radius: 10px;
-      overflow: hidden;
-      margin: 10px 0;
-    }
-
-    .progress div {
-      height: 100%;
-      width: 0%;
-      background: #22c55e;
-      transition: width 0.3s;
-    }
-
-    .actions {
-      display: flex;
-      gap: 10px;
-      margin-top: 10px;
-    }
-
-    .actions button {
-      flex: 1;
-      background: #4f46e5;
-      color: white;
-    }
-
-    .message {
-      text-align: center;
-      font-size: 18px;
-      margin-top: 20px;
-      color: #22c55e;
-    }
-  </style>
+/* DASHBOARD */
+.dashboard{display:none;padding:30px}
+.balance{
+  background:#15151c;
+  padding:20px;
+  border-radius:12px;
+  margin-bottom:25px;
+  font-size:20px;
+}
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:20px;
+}
+.card{
+  background:#15151c;
+  padding:20px;
+  border-radius:14px;
+  text-align:center;
+}
+.card h3{margin:0 0 10px}
+.card button{
+  margin-top:15px;
+  padding:10px 15px;
+  background:#3b82f6;
+  border:none;
+  color:#fff;
+  border-radius:6px;
+  cursor:pointer;
+}
+.card button:disabled{
+  background:#555;
+  cursor:not-allowed;
+}
+.logout{
+  margin-top:30px;
+  background:#ef4444;
+}
+</style>
 </head>
-
 <body>
 
-<header>
-  <h1>Habit Forge</h1>
-  <p>Build habits. Track progress. Stay consistent.</p>
-</header>
+<!-- LOGIN -->
+<div class="login" id="login">
+  <div class="login-box">
+    <h2>تسجيل الدخول</h2>
+    <input id="phone" placeholder="رقم الهاتف">
+    <input id="pass" type="password" placeholder="كلمة المرور">
+    <button onclick="login()">دخول</button>
+  </div>
+</div>
 
-<div class="container">
+<!-- DASHBOARD -->
+<div class="dashboard" id="dashboard">
+  <h1>Quota Packages</h1>
 
-  <div class="card">
-    <h2>Add New Habit</h2>
-    <input id="habitName" placeholder="Habit name (e.g. Drink water)" />
-    <select id="habitType">
-      <option value="daily">Daily</option>
-      <option value="weekly">Weekly</option>
-    </select>
-    <button onclick="addHabit()">Add Habit</button>
+  <div class="balance">
+    الرصيد الحالي:
+    <b id="balance">10,000,000</b> LBP
   </div>
 
-  <div class="card">
-    <h2>Your Habits</h2>
-    <div id="habits"></div>
+  <div class="grid">
+    <div class="card">
+      <h3>5.5 GB</h3>
+      <p>550,000 LBP</p>
+      <button onclick="buy(550000)">شراء</button>
+    </div>
+
+    <div class="card">
+      <h3>11 GB</h3>
+      <p>720,000 LBP</p>
+      <button onclick="buy(720000)">شراء</button>
+    </div>
+
+    <div class="card">
+      <h3>16.5 GB</h3>
+      <p>890,000 LBP</p>
+      <button onclick="buy(890000)">شراء</button>
+    </div>
+
+    <div class="card">
+      <h3>22 GB</h3>
+      <p>1,070,000 LBP</p>
+      <button onclick="buy(1070000)">شراء</button>
+    </div>
+
+    <div class="card">
+      <h3>55 GB</h3>
+      <p>2,070,000 LBP</p>
+      <button disabled>نفدت الكمية</button>
+    </div>
   </div>
 
-  <div class="message" id="message"></div>
-
+  <button class="logout" onclick="logout()">تسجيل خروج</button>
 </div>
 
 <script>
-  let habits = JSON.parse(localStorage.getItem("habits") || "[]");
+let BALANCE = 10000000;
 
-  const messages = [
-    "Great job! 💪",
-    "Keep going 🔥",
-    "Consistency is power 🚀",
-    "Small steps every day 🌱",
-    "Don't break the streak 👏"
-  ];
+// LOGIN
+function login(){
+  const phone = document.getElementById("phone").value;
+  const pass = document.getElementById("pass").value;
 
-  function addHabit() {
-    const name = habitName.value.trim();
-    const type = habitType.value;
-    if (!name) return;
-
-    habits.push({
-      name,
-      type,
-      streak: 0,
-      progress: 0
-    });
-
-    habitName.value = "";
-    save();
-    render();
+  if(phone==="70123456" && pass==="1234"){
+    document.getElementById("login").style.display="none";
+    document.getElementById("dashboard").style.display="block";
+  }else{
+    alert("بيانات غير صحيحة");
   }
+}
 
-  function completeHabit(i) {
-    habits[i].streak++;
-    habits[i].progress = Math.min(habits[i].progress + (habits[i].type === "daily" ? 10 : 20), 100);
-    message.innerText = messages[Math.floor(Math.random() * messages.length)];
-    save();
-    render();
+// BUY
+function buy(price){
+  if(BALANCE < price){
+    alert("رصيدك غير كافٍ");
+    return;
   }
+  BALANCE -= price;
+  document.getElementById("balance").innerText = BALANCE.toLocaleString();
+  alert("تم إرسال الطلب، بانتظار التفعيل");
+}
 
-  function save() {
-    localStorage.setItem("habits", JSON.stringify(habits));
-  }
-
-  function render() {
-    habitsDiv = document.getElementById("habits");
-    habitsDiv.innerHTML = "";
-
-    habits.forEach((h, i) => {
-      habitsDiv.innerHTML += `
-        <div class="habit">
-          <h3>${h.name}</h3>
-          <small>${h.type} habit • Streak: ${h.streak}</small>
-          <div class="progress">
-            <div style="width:${h.progress}%"></div>
-          </div>
-          <div class="actions">
-            <button onclick="completeHabit(${i})">Complete</button>
-          </div>
-        </div>
-      `;
-    });
-  }
-
-  render();
+// LOGOUT
+function logout(){
+  location.reload();
+}
 </script>
 
 </body>
